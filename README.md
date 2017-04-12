@@ -16,7 +16,7 @@ go get github.com/pferdefleisch/rivebot
 redis-server
 
 # Run bot brain
-rivebot -rs="./path/to/rivescript/directory" -message="this is a false statement" -session="12346"
+rivebot -rs="./path/to/rivescript/directory" -message="this is a false statement" -sessionid="12346"
 ```
 
 This will print out your bot's response to stdout
