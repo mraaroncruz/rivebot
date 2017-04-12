@@ -1,0 +1,99 @@
+! version = 2.0
+
+! array hello = hello hi hey yo aloh hallo allo howdy
+	^ good morning|good day|hi there|anybody home|anyone home
+! array bye = bye goodbye goodby byebye buhbye goodnight adios cya aurevoir
+	^ buh bye|hasta la vista|hasta luego|have to go|got to go|g2g|gtg|c ya
+	^ have a good night|good night|see you later|catch you later|by by|bye bye
+	^ i want to leave|i need to go|i going|i leaving
+! array thanks = thanks
+  ^ |thank you|
+! array positive = great wonderful
+  ^ |i love it|
+
+
++ @hello
+* <get isOnboarded> == true => {@int ask for location}
+- {@int onboard user}
+
+
++ int onboard user
+- <set isOnboarded=true>
+^ Hi There!\n
+^ I'll help you find burgers or beer near you.\n
+^ {@ int ask for location}
+
++ int ask for location
+- Tell me where you're at so I can send you some recommendations.{topic=search}
+
+> topic search
+  + messenger location
+  - hello from topic
+
+	! array choices = burgers both beer
+
+  + messenger postback (@choices)
+  * <get lat> == undefined => {@int fallback}
+  - <set searchType=<star>><set page=1>{@int get next page}
+
+  + messenger postback yes
+  * <get page> == undefined => {topic=random}{@int fallback}
+  - <add page=1>{@int get next page}
+
+  + int get next page
+  ^ \s
+
+  + messenger postback no
+  - {topic=random}
+  ^ <set page=undefined>
+  ^ <set searchType=undefined>
+  ^ <set lat=undefined>
+  ^ <set lng=undefined>
+  ^ <set venues=undefined>
+  ^ Ok. See you soon.
+
+	+ *
+	* <get searchMisses> == undefined => <set searchMisses=1>{@int dont understand}
+	* <get searchMisses> == 2 => <set searchMisses=0>{topic=random}{@int unknown <star>}
+	- <add searchMisses=1> {@int dont understand}
+
+	+ int dont understand
+	-  I don't understand
+	-  Sorry, no idea
+	-  What?
+
+< topic
+
+
++ @thanks
+- You're welcome!
+- No problem.
+- I'm at your service.
+- I love to help.
+- Any time.
+- Let me know if you need anything else.
+- Cheers
+- np
+
+
++ @positive
+- I aim to please
+- Cheers
+- Any time
+
+
++ intent default fallback intent
+- {@int fallback}
+
++ int fallback
+- Sorry, I have no idea what that means
+- WHAT??!!!
+- No idea what you're on about...
+- Do you hear the words coming out of my mouth?!
+- Nope. Nope. Nope...
+
++ int unknown *
+- error unknown
+
++ *
+- {@int unknown <star>}
